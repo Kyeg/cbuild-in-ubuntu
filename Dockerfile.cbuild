@@ -32,7 +32,7 @@ WORKDIR /root
 
 ## <Optional> Oh-My-Zsh (& Configuration)
 RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-COPY ./zshrc /root/.zshrc
+COPY ./installed/zshrc /root/.zshrc
 
 ## <Optional> Set Zsh as default shell
 RUN chsh -s $(which zsh)
