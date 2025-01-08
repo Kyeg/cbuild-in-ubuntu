@@ -1,4 +1,4 @@
-## Ubuntu: ~100MB, basic+zsh: ~195MB, cbuild: ~288MB
+## Ubuntu: ~100MB, apt update lists: ~45MB, vim+tree: ~73MB, cbuild: ~288MB, zsh+oh-my-zsh: ~62MB (MacOS-arm64)
 FROM ubuntu:24.04
 
 ## Avoid prompts from apt
@@ -7,40 +7,47 @@ ENV DEBIAN_FRONTEND=noninteractive
 ## Required packages (also, Combining Commands to Save Space)
 RUN apt update \
     && apt install -y \
-    ## Sometimes Error-prone: --no-install-recommends
+    # Sometimes Error-prone: --no-install-recommends
     # && apt install -y --no-install-recommends \
-    curl \
-    git \
+    # Basic
     vim \
     tree \
-    ## C Build
-    build-essential \
+    # C Build
     # gcc \
     # g++ \
     # make \
-    ## <Optional> CMake
+    # <Optional> CMake
     # cmake \
-    ## <Optional> Zsh
-    zsh \
-    fonts-powerline
+    build-essential
 
-## Space Optimization
+## Space Optimization (apt update lists)
 # && rm -rf /var/lib/apt/lists/*
 
 ## Working Directory
 WORKDIR /root
 
+## <Optional> Zsh & Oh-My-Zsh
+RUN apt update \
+    && apt install -y \
+    zsh \
+    fonts-powerline \
+    curl \
+    git
+
 ## <Optional> Oh-My-Zsh (& Configuration)
-RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 COPY ./installed/zshrc /root/.zshrc
 
 ## <Optional> Set Zsh as default shell
-RUN chsh -s $(which zsh)
+# RUN chsh -s $(which zsh)
 
 
 ## CMD
+# CMD [ "sh" ]
 CMD [ "zsh" ]
 
+
 ## Build & Run
+
 ## $ docker build -t cbuild-ubuntu:24.04 -f Dockerfile.cbuild .
 ## $ docker run -it -h cbuild-ubuntu -v ./workdir:/root/workdir --name cbuild-ubuntu cbuild-ubuntu:24.04
